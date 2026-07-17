@@ -1,16 +1,118 @@
-import { Router } from "express";
+import { handleInputErrors } from "../../middleware";
 import {
 	getAllReviews,
 	getReview,
 	createNewReview,
 	updateReviewById,
-	deleteReview
+	deleteReview,
 } from "./review.controller";
+import { Router } from "express";
 import { body, param } from "express-validator";
-import { handleInputErrors } from "../../middleware";
 
 const router = Router();
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   Review:
+ *    type: object
+ *    properties:
+ *     id:
+ *      type: string
+ *      description: The review ID
+ *      example: "asdl8cfma1234y0uejxijefgh"
+ *     name:
+ *      type: string
+ *      description: The establishment name
+ *      example: "Café del Ángel"
+ *     rating:
+ *      type: integer
+ *      description: The establishment rating
+ *      example: 5
+ *     description:
+ *      type: string
+ *      description: The establishment description
+ *      example: "Buena calidad en café y agradable musica en vivo los fines de semana."
+ *     address:
+ *      type: string
+ *      description: The establishment address
+ *      example: "Venustiano Carranza 117, Zona Centro, 20000 Aguascalientes, Ags"
+ *     latitude:
+ *      type: number
+ *      description: The establishment latitude
+ *      example: 21.880421167988118
+ *     longitude:
+ *      type: number
+ *      description: The establishment longitude
+ *      example: 102.29929131228646
+ *     coverImage:
+ *      type: string
+ *      description: The establishment image
+ *      example: "asdasdqweqwdasf123123.jpg"
+ *     categoryId:
+ *      type: string
+ *      description: The establishment category
+ *      example: "werg4515rgagqertqwer"
+ *     createdAt:
+ *      type: string
+ *      description: Date the record was created
+ *      example: "2026-07-14T21:39:40.691Z"
+ *     updatedAt:
+ *      type: string
+ *      description: Date the record was updated
+ *      example: "2026-07-14T21:39:40.691Z"
+ *
+ */
 
+/**
+ * @swagger
+ * /api/reviews:
+ *   post:
+ *     summary: Creates a new review
+ *     tags:
+ *       - Reviews
+ *     description: Returns a new record in the database
+ *     requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:            
+ *                 name:
+ *                   type: string
+ *                   example: "Café del Ángel"
+ *                 rating:
+ *                   type: integer
+ *                   example: 5
+ *                 description:
+ *                   type: string
+ *                   example: "Buena calidad en café y agradable musica en vivo los fines de semana."
+ *                 address:
+ *                   type: string
+ *                   example: "Venustiano Carranza 117, Zona Centro, 20000 Aguascalientes, Ags"
+ *                 latitude:
+ *                   type: string
+ *                   example: 21.880421167988118
+ *                 longitude:
+ *                   type: string
+ *                   example: 102.29929131228646
+ *                 coverImage:
+ *                   type: string
+ *                   example: "asdasdqweqwdasf123123.jpg"
+ *                 categoryId:
+ *                   type: string
+ *                   example: "asdwqeqwegsdggqwe234"
+ *     responses:
+ *       201:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Review'
+ *       400:
+ *         description: Bad Request - Invalid input data
+ */
 router.post(
 	"/",
 	body("name")
@@ -64,8 +166,53 @@ router.post(
 	createNewReview,
 );
 
+/**
+ * @swagger
+ * /api/reviews:
+ *  get:
+ *   summary: Get a List of reviews
+ *   tags:
+ *    - Reviews
+ *   description: Return a list of reviews
+ *   responses:
+ *    200:
+ *     description: Successful response
+ *     content:
+ *      application/json:
+ *       schema:
+ *        type: array
+ *        items:
+ *         $ref: '#/components/schemas/Review'
+ */
 router.get("/", getAllReviews);
 
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   get:
+ *     summary: Get a review by ID
+ *     tags:
+ *       - Reviews
+ *     description: Return a review based on its unique ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: The ID of the review to retrieve
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Review'
+ *       404:
+ *         description: Review not found
+ *       400:
+ *         description: Invalid ID
+ */
 router.get(
 	"/:id",
 	param("id").notEmpty().withMessage("Id requerido"),

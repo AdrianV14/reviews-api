@@ -1,5 +1,4 @@
-import { Router } from "express";
-import { body, param } from "express-validator";
+import { handleInputErrors } from "../../middleware";
 import {
 	getAllCategories,
 	createNewCategory,
@@ -7,7 +6,8 @@ import {
 	updateCategoryById,
 	deleteCategory,
 } from "./category.controller";
-import { handleInputErrors } from "../../middleware";
+import { Router } from "express";
+import { body, param } from "express-validator";
 
 const router = Router();
 /**
@@ -18,19 +18,59 @@ const router = Router();
  *    type: object
  *    properties:
  *     id:
- *      type: String
+ *      type: string
  *      description: The category ID
  *      example: "asdl8cfma1234y0uejxijefgh"
  *     name:
- *      type: String
+ *      type: string
  *      description: The category name
  *      example: "Café"
  *     createAt:
- *      type: DateTime
+ *      type: string
  *      description: Record creation date
  *      example: "2026-07-14T21:39:40.691Z"
- * 
+ *
  */
+
+/**
+ * @swagger
+ * /api/categories:
+ *   post:
+ *     summary: Creates a new category
+ *     tags:
+ *       - Categories
+ *     description: Returns a new record in the database
+ *     requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   example: "Restaurante"
+ *     responses:
+ *       201:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       400:
+ *         description: Bad Request - Invalid input data
+ */
+router.post(
+	"/",
+	body("name")
+		.trim()
+		.notEmpty()
+		.withMessage("El nombre de la categoría no puede ir vacío")
+		.isLength({ min: 2, max: 50 })
+		.withMessage("El nombre debe tener entre 2 y 50 caracteres"),
+	handleInputErrors,
+	createNewCategory,
+);
 
 /**
  * @swagger
@@ -88,47 +128,7 @@ router.get(
 
 /**
  * @swagger
- * /api/categories:
- *   post:
- *     summary: Creates a new category
- *     tags:
- *       - Categories
- *     description: Returns a new record in the database
- *     requestBody:
- *         required: true
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:            
- *                 name:
- *                   type: String
- *                   example: "Restaurante"
- *     responses:
- *       201:
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Category'
- *       400:
- *         description: Bad Request - Invalid input data
- */
-router.post(
-	"/",
-	body("name")
-		.trim()
-		.notEmpty()
-		.withMessage("El nombre de la categoría no puede ir vacío")
-		.isLength({ min: 2, max: 50 })
-		.withMessage("El nombre debe tener entre 2 y 50 caracteres"),
-	handleInputErrors,
-	createNewCategory,
-);
-
-/**
- * @swagger
- * /api/products/{id}:
+ * /api/categories/{id}:
  *   put:
  *     summary: Updates a category with user input
  *     tags:
@@ -176,6 +176,37 @@ router.put(
 	updateCategoryById,
 );
 
+/**
+ * @swagger
+ * /api/categories/{id}:
+ *   delete:
+ *     summary: Deletes a category by ID
+ *     tags:
+ *       - Categories
+ *     description: Returns a confirmation message
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: The ID of the category to delete
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: string
+ *                   example: 'Categoría eliminada correctamente.'
+ *       400:
+ *         description: Bad Request - Invalid ID
+ *       404:
+ *         description: Product not found
+ */
 router.delete(
 	"/:id",
 	param("id").notEmpty().withMessage("Id requerido"),

@@ -8,13 +8,13 @@ const createCategory = (name: string) => {
 	return prisma.category.create({ data: { name: name } });
 };
 
-const getCategoryById = (categoryId: string) => {
-	return prisma.category.findUnique({ where: { id: categoryId } });
+const getCategoryById = (id: string) => {
+	return prisma.category.findUnique({ where: { id } });
 };
 
-const updateCategory = async (categoryId: string, name: string) => {
+const updateCategory = async (id: string, name: string) => {
 	const category = await prisma.category.findUnique({
-		where: { id: categoryId },
+		where: { id },
 	});
 
 	if (!category) {
@@ -22,21 +22,21 @@ const updateCategory = async (categoryId: string, name: string) => {
 	}
 
 	return prisma.category.update({
-		where: { id: categoryId },
-		data: { name: name },
+		where: { id },
+		data: { name },
 	});
 };
 
-const deleteCategoryById = async (categoryId: string) => {
+const deleteCategoryById = async (id: string) => {
 	const category = await prisma.category.findUnique({
-		where: { id: categoryId },
+		where: { id },
 	});
 
 	if (!category) {
 		return null;
 	}
 
-	return prisma.category.delete({ where: { id: categoryId } });
+	return prisma.category.delete({ where: { id } });
 };
 export {
 	createCategory,
