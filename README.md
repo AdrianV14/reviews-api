@@ -90,7 +90,7 @@ npx prisma studio
 ### Documentation
 | Endpoint | Description |
 |----------|-------------|
-| `/categories` | Get all categories |
+| `/docs` | Get all categories |
 
 
 ### Categories
