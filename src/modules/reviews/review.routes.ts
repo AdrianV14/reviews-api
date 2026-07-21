@@ -78,7 +78,7 @@ const router = Router();
  *           application/json:
  *             schema:
  *               type: object
- *               properties:            
+ *               properties:
  *                 name:
  *                   type: string
  *                   example: "Café del Ángel"
@@ -92,10 +92,10 @@ const router = Router();
  *                   type: string
  *                   example: "Venustiano Carranza 117, Zona Centro, 20000 Aguascalientes, Ags"
  *                 latitude:
- *                   type: string
+ *                   type: number
  *                   example: 21.880421167988118
  *                 longitude:
- *                   type: string
+ *                   type: number
  *                   example: 102.29929131228646
  *                 coverImage:
  *                   type: string
@@ -220,6 +220,64 @@ router.get(
 	getReview,
 );
 
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   put:
+ *     summary: Updates a review with user input
+ *     tags:
+ *       - Reviews
+ *     description: Returns the updated review
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: The ID of the review to update
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   example: "Café del Ángel"
+ *                 rating:
+ *                   type: integer
+ *                   example: 5
+ *                 description:
+ *                   type: string
+ *                   example: "Buena calidad en café y agradable musica en vivo los fines de semana."
+ *                 address:
+ *                   type: string
+ *                   example: "Venustiano Carranza 117, Zona Centro, 20000 Aguascalientes, Ags"
+ *                 latitude:
+ *                   type: number
+ *                   example: 21.880421167988118
+ *                 longitude:
+ *                   type: number
+ *                   example: 102.29929131228646
+ *                 coverImage:
+ *                   type: string
+ *                   example: "asdasdqweqwdasf123123.jpg"
+ *                 categoryId:
+ *                   type: string
+ *                   example: "asdwqeqwegsdggqwe234"
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Review'
+ *       400:
+ *         description: Bad Request - Invalid ID or Invalid input data
+ *       404:
+ *         description: Review not found
+ */
 router.put(
 	"/:id",
 	param("id").notEmpty().withMessage("Id requerido"),
@@ -229,51 +287,75 @@ router.put(
 		.withMessage("El nombre del establecimiento no puede ir vacío")
 		.isLength({ min: 2, max: 50 })
 		.withMessage("El nombre debe tener entre 2 y 50 caracteres"),
-
 	body("rating")
 		.notEmpty()
 		.withMessage("El rating no puede ir vacío")
 		.isInt({ min: 1, max: 5 })
 		.withMessage("El rating debe ser un número entero entre 1 y 5"),
-
 	body("description")
 		.trim()
 		.notEmpty()
 		.withMessage("La descripción no puede ir vacía")
 		.isLength({ min: 10, max: 2000 })
 		.withMessage("La descripción debe tener entre 10 y 2000 caracteres"),
-
 	body("address")
 		.trim()
 		.notEmpty()
 		.withMessage("La dirección no puede ir vacía")
 		.isLength({ min: 5, max: 255 })
 		.withMessage("La dirección debe tener entre 5 y 255 caracteres"),
-
 	body("latitude")
 		.notEmpty()
 		.withMessage("La latitud es requerida")
 		.isFloat({ min: -90, max: 90 })
 		.withMessage("La latitud debe estar entre -90 y 90"),
-
 	body("longitude")
 		.notEmpty()
 		.withMessage("La longitud es requerida")
 		.isFloat({ min: -180, max: 180 })
 		.withMessage("La longitud debe estar entre -180 y 180"),
-
 	body("coverImage")
 		.trim()
 		.notEmpty()
 		.withMessage("La imagen principal es requerida")
 		.isLength({ max: 500 })
 		.withMessage("La ruta de la imagen es demasiado larga"),
-
 	body("categoryId").trim().notEmpty().withMessage("La categoría es requerida"),
 	handleInputErrors,
 	updateReviewById,
 );
 
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   delete:
+ *     summary: Deletes a review by ID
+ *     tags:
+ *       - Reviews
+ *     description: Returns a confirmation message
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: The ID of the review to delete
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: string
+ *                   example: 'Reseña eliminada correctamente.'
+ *       400:
+ *         description: Bad Request - Invalid ID
+ *       404:
+ *         description: Review not found
+ */
 router.delete(
 	"/:id",
 	param("id").notEmpty().withMessage("Id requerido"),

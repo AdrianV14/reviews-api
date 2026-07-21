@@ -86,6 +86,13 @@ npx prisma studio
 
 
 ## 📌 API Endpoints
+
+### Documentation
+| Endpoint | Description |
+|----------|-------------|
+| `/categories` | Get all categories |
+
+
 ### Categories
 | Method | Endpoint | Description |
 |--------|----------|-------------|
